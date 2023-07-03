@@ -3,6 +3,16 @@ image: node:18-alpine
 stages:
   - "test_unit"
 
+workflow:
+  rules:
+    # Only in merge requests
+    - if: $CI_MERGE_REQUEST_ID
+    # or tags
+    - if: $CI_COMMIT_TAG
+    # or master
+    - if: $CI_COMMIT_BRANCH == "main"
+    - when: never
+
 test_unit:
   stage: "test_unit"
   script:
