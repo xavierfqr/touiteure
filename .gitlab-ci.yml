@@ -1,0 +1,10 @@
+image: node:18-alpine
+
+stages:
+  - "test_unit"
+
+test_unit:
+  stage: "test_unit"
+  script:
+    - yarn
+    - yarn test
