@@ -1,8 +1,8 @@
-# Remix Indie Stack
+# Remix Skeleton
 
-![The Remix Indie Stack](https://repository-images.githubusercontent.com/465928257/a241fa49-bd4d-485a-a2a5-5cb8e4ee0abf)
+POC of the skeleton using Remix.
 
-Learn more about [Remix Stacks](https://remix.run/stacks).
+This project was bootstrapped with the Remix [Indie Stack](https://github.com/remix-run/indie-stack)
 
 ```sh
 npx create-remix@latest --template remix-run/indie-stack
@@ -10,10 +10,6 @@ npx create-remix@latest --template remix-run/indie-stack
 
 ## What's in the stack
 
-- [Fly app deployment](https://fly.io) with [Docker](https://www.docker.com/)
-- Production-ready [SQLite Database](https://sqlite.org)
-- Healthcheck endpoint for [Fly backups region fallbacks](https://fly.io/docs/reference/configuration/#services-http_checks)
-- [GitHub Actions](https://github.com/features/actions) for deploy on merge to production and staging environments
 - Email/Password Authentication with [cookie-based sessions](https://remix.run/utils/sessions#md-createcookiesessionstorage)
 - Database ORM with [Prisma](https://prisma.io)
 - Styling with [Tailwind](https://tailwindcss.com/)
@@ -24,7 +20,18 @@ npx create-remix@latest --template remix-run/indie-stack
 - Linting with [ESLint](https://eslint.org)
 - Static Types with [TypeScript](https://typescriptlang.org)
 
-Not a fan of bits of the stack? Fork it, change it, and use `npx create-remix --template your/repo`! Make it your own.
+## Project's setup and start
+
+```sh
+# Install deps
+make install
+
+# Init Prisma and seed the DB
+make db.init
+
+# Start the project
+make start
+```
 
 ## Testing
 
