@@ -2,8 +2,7 @@ install:
 	cp .env.dist .env
 	yarn
 
-start:
-	docker compose up -d postgres
+start: db.start
 	yarn wait-port 5432 && yarn dev
 
 stop:
@@ -12,7 +11,10 @@ stop:
 test.unit:
 	yarn test
 
-db.init:
+db.start:
+	docker compose up -d postgres
+
+db.init: db.start
 	yarn setup
 
 db.connect:
