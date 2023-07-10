@@ -1,0 +1,9 @@
+
+{
+    "errors": {
+        "email": null,
+        "password": null,
+        "username": "A user already exists with this username"
+    }, 
+    "status": 400 
+}

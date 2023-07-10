@@ -8,26 +8,21 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  notes     Note[]
-  password  Password?
+  id             String    @id @default(uuid())
+  email          String    @unique
+  username       String    @unique
+  password       Password?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  isVerified     Boolean   @default(false)
+  profilePicture String?
+  biography      String    @default("")
+  isFollowOnly   Boolean   @default(false)
+  magicLinkToken String?
 }
 
 model Password {
   hash   String
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Note {
-  id        String   @id @default(cuid())
-  title     String
-  body      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
