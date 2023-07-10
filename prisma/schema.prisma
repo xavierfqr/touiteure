@@ -19,10 +19,20 @@ model User {
   biography      String    @default("")
   isFollowOnly   Boolean   @default(false)
   magicLinkToken String?
+  tweets          Tweet[]
 }
 
 model Password {
   hash   String
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Tweet {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  content    String
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  attachment String?
 }
