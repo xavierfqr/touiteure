@@ -9,16 +9,22 @@ import {
   TabsTrigger,
 } from "../../@/components/ui/tabs";
 import { useState } from "react";
+import { listTweets } from "../business/tweet/services/index.server";
+import TweetList from "../business/tweet/components/TweetList";
 
-export const loader = async ({ params }: LoaderArgs) => {
+export const loader = async ({ params, request }: LoaderArgs) => {
   invariant(params.username, "username not found");
-  const user = await getUserByUsername(params.username);
-  invariant(user, "user not found");
-  return json({ user });
+
+  const profileUser = await getUserByUsername(params.username);
+  invariant(profileUser, "user not found");
+
+  const tweets = await listTweets(profileUser.id);
+
+  return json({ user: profileUser, tweets });
 };
 
 export default function Profile() {
-  const { user } = useLoaderData<typeof loader>();
+  const { user, tweets } = useLoaderData<typeof loader>();
   const [activeTab, setActiveTab] = useState(1);
   console.log(user);
 
@@ -46,7 +52,7 @@ export default function Profile() {
       <hr className="mb-10" />
 
       <Tabs defaultValue="Feed">
-        <TabsList className="flex justify-around rounded bg-gray-100 py-1">
+        <TabsList className="flex justify-around rounded bg-gray-100 p-1">
           <TabsTrigger
             value="Feed"
             className="w-full p-0"
@@ -76,7 +82,7 @@ export default function Profile() {
         </TabsList>
         <div className="mt-10">
           <TabsContent value="Feed" className="flex justify-center">
-            Make changes to your account here.
+            <TweetList tweets={tweets} />
           </TabsContent>
           <TabsContent value="Likes" className="flex justify-center">
             Change your password here.
