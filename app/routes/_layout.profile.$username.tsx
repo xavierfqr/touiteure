@@ -2,6 +2,13 @@ import { type LoaderArgs, json } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { useLoaderData } from "@remix-run/react";
 import { getUserByUsername } from "../models/user.server";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../@/components/ui/tabs";
+import { useState } from "react";
 
 export const loader = async ({ params }: LoaderArgs) => {
   invariant(params.username, "username not found");
@@ -12,7 +19,7 @@ export const loader = async ({ params }: LoaderArgs) => {
 
 export default function Profile() {
   const { user } = useLoaderData<typeof loader>();
-
+  const [activeTab, setActiveTab] = useState(1);
   console.log(user);
 
   return (
@@ -36,12 +43,46 @@ export default function Profile() {
           <div className="mt-10">{user.biography}</div>
         </div>
       </div>
-      <hr />
+      <hr className="mb-10" />
 
-      <div className="mt-10">
-        <div>Touits</div>
-        {/* TODO : Add TweetList component */}
-      </div>
+      <Tabs defaultValue="Feed">
+        <TabsList className="flex justify-around rounded bg-gray-100 py-1">
+          <TabsTrigger
+            value="Feed"
+            className="w-full p-0"
+            onClick={() => setActiveTab(1)}
+          >
+            <button
+              className={`w-full rounded ${
+                activeTab === 1 ? "bg-white" : ""
+              } px-4 py-2 text-black`}
+            >
+              Touites
+            </button>
+          </TabsTrigger>
+          <TabsTrigger
+            value="Likes"
+            className="w-full p-0"
+            onClick={() => setActiveTab(2)}
+          >
+            <button
+              className={`w-full rounded ${
+                activeTab === 2 ? "bg-white" : ""
+              } px-4 py-2 text-black`}
+            >
+              Likes
+            </button>
+          </TabsTrigger>
+        </TabsList>
+        <div className="mt-10">
+          <TabsContent value="Feed" className="flex justify-center">
+            Make changes to your account here.
+          </TabsContent>
+          <TabsContent value="Likes" className="flex justify-center">
+            Change your password here.
+          </TabsContent>
+        </div>
+      </Tabs>
     </div>
   );
 }
