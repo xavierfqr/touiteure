@@ -1,27 +1,40 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { touitosBuilder } from "../app/business/tweet/utils";
 
 const prisma = new PrismaClient();
 
-async function seed() {
-  const email = "touitos@gmail.com";
-  const username = "touitosOriginel";
-  const firstname = "el";
-  const lastname = "touitos";
+const originalTouitos = touitosBuilder(
+  "touitos@gmail.com",
+  "touitosOriginel",
+  "el",
+  "touitos"
+);
+const thomasLeTrain = touitosBuilder(
+  "thomas@gmail.com",
+  "thomasletrain",
+  "thomas",
+  "letrain"
+);
 
+async function seed() {
   // cleanup the existing database
-  await prisma.user.delete({ where: { email } }).catch(() => {
-    // no worries if it doesn't exist yet
-  });
+  await prisma.user
+    .deleteMany({
+      where: { email: { in: ["touitos@gmail.com", "thomas@gmail.com"] } },
+    })
+    .catch(() => {
+      // no worries if it doesn't exist yet
+    });
 
   const hashedPassword = await bcrypt.hash("secretpassword", 10);
 
   await prisma.user.create({
     data: {
-      email,
-      username,
-      firstname,
-      lastname,
+      email: originalTouitos.email,
+      username: originalTouitos.username,
+      firstname: originalTouitos.firstname,
+      lastname: originalTouitos.lastname,
       password: {
         create: {
           hash: hashedPassword,
@@ -38,6 +51,30 @@ async function seed() {
               attachment:
                 "https://plus.unsplash.com/premium_photo-1670793631505-98e872b02418",
             },
+          ],
+        },
+      },
+    },
+  });
+
+  const thomasPassword = await bcrypt.hash("thomaspassword", 10);
+
+  await prisma.user.create({
+    data: {
+      email: thomasLeTrain.email,
+      username: thomasLeTrain.username,
+      firstname: thomasLeTrain.firstname,
+      lastname: thomasLeTrain.lastname,
+      password: {
+        create: {
+          hash: thomasPassword,
+        },
+      },
+      tweets: {
+        createMany: {
+          data: [
+            { content: "Salut moi c'est Thomas" },
+            { content: "J'aime rire 🙂" },
           ],
         },
       },

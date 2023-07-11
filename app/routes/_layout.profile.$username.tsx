@@ -12,7 +12,7 @@ import { useState } from "react";
 import { listTweets } from "../business/tweet/services/index.server";
 import TweetList from "../business/tweet/components/TweetList";
 
-export const loader = async ({ params, request }: LoaderArgs) => {
+export const loader = async ({ params }: LoaderArgs) => {
   invariant(params.username, "username not found");
 
   const profileUser = await getUserByUsername(params.username);
@@ -25,7 +25,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 
 export default function Profile() {
   const { user, tweets } = useLoaderData<typeof loader>();
-  const [activeTab, setActiveTab] = useState(1);
+  const [activeTab, setActiveTab] = useState<"feed" | "likes">("feed");
   console.log(user);
 
   return (
@@ -38,7 +38,7 @@ export default function Profile() {
             width={200}
           />
           <button className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400">
-            Follow / Unfollow
+            Follow / Unfollow / Edit
           </button>
         </div>
         <div>
@@ -56,11 +56,11 @@ export default function Profile() {
           <TabsTrigger
             value="Feed"
             className="w-full p-0"
-            onClick={() => setActiveTab(1)}
+            onClick={() => setActiveTab("feed")}
           >
             <button
               className={`w-full rounded ${
-                activeTab === 1 ? "bg-white" : ""
+                activeTab === "feed" ? "bg-white" : ""
               } px-4 py-2 text-black`}
             >
               Touites
@@ -69,11 +69,11 @@ export default function Profile() {
           <TabsTrigger
             value="Likes"
             className="w-full p-0"
-            onClick={() => setActiveTab(2)}
+            onClick={() => setActiveTab("likes")}
           >
             <button
               className={`w-full rounded ${
-                activeTab === 2 ? "bg-white" : ""
+                activeTab === "likes" ? "bg-white" : ""
               } px-4 py-2 text-black`}
             >
               Likes

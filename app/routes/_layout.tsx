@@ -4,25 +4,35 @@ import { AbsoluteRoutes } from "../routes";
 import { getUserId } from "../session.server";
 
 import { Bird, LogOut, MessageSquare, User } from "lucide-react";
+import { getUserById } from "../models/user.server";
 
 const NOT_CONNECTED_TABS = [
   { name: "Login", url: AbsoluteRoutes.login },
   { name: "Sign up", url: AbsoluteRoutes.signup },
 ];
 
-const TABS = [
-  { name: "Feed", icon: MessageSquare, url: "." },
-  { name: "Profile", icon: User, url: AbsoluteRoutes.profile },
-  { name: "Logout", icon: LogOut, url: AbsoluteRoutes.logout },
-];
-
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await getUserId(request);
-  return json({ userId });
+  if (userId) {
+    const user = await getUserById(userId);
+    return json({ userId: user?.id, user });
+  }
+
+  return json({ userId, user: null });
 };
 
 export default function Layout() {
-  const { userId } = useLoaderData<typeof loader>();
+  const { userId, user } = useLoaderData<typeof loader>();
+
+  const TABS = [
+    { name: "Feed", icon: MessageSquare, url: "." },
+    { name: "Logout", icon: LogOut, url: AbsoluteRoutes.logout },
+    {
+      name: "Profile",
+      icon: User,
+      url: AbsoluteRoutes.profile.replace(":username", user?.username ?? ""),
+    },
+  ];
 
   return (
     <div className="flex h-full min-h-screen flex-col">

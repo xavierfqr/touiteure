@@ -7,7 +7,7 @@ interface TweetListProps {
 
 export default function TweetList({ tweets }: TweetListProps) {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex w-full flex-col gap-8">
       {tweets.map((tweet) => (
         <Tweet key={tweet.id} {...tweet} />
       ))}
