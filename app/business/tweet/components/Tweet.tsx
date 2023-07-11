@@ -1,20 +1,13 @@
-import { UserPlus2, Heart } from "lucide-react";
+import { Link } from "@remix-run/react";
+import { Heart, UserPlus2 } from "lucide-react";
 
-import { formatISODate } from "~/utils/date";
+import type { Tweet } from "~/business/tweet/type";
+import { formatISODate } from "~/technical/formatDate";
 
-export interface TweetProps {
-  id: string;
-  author: { username: string; id: string };
-  followed: boolean;
-  content: string;
-  attachment: string | null;
-  liked: boolean;
-  createdAt: string;
-}
+type TweetProps = Tweet;
 
 export default function Tweet({
-  author: { id, username },
-  followed,
+  author: { id, username, followed },
   content,
   attachment,
   liked,
@@ -23,9 +16,9 @@ export default function Tweet({
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-slate-300 p-4">
       <div className="flex items-center gap-2">
-        <a className="font-bold" href={`/user/${id}`}>
+        <Link className="font-bold" to={`/user/${id}`}>
           @{username}
-        </a>
+        </Link>
 
         <button>
           {followed ? (

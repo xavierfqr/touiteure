@@ -1,7 +1,7 @@
 import { prisma } from "~/db.server";
 
-export function listTweets() {
-  return prisma.tweet.findMany({
+export async function listTweets() {
+  const tweets = await prisma.tweet.findMany({
     select: {
       id: true,
       content: true,
@@ -10,4 +10,10 @@ export function listTweets() {
       author: { select: { id: true, username: true } },
     },
   });
+
+  return tweets.map((t) => ({
+    ...t,
+    author: { ...t.author, followed: false },
+    liked: false,
+  }));
 }

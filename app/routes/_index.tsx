@@ -1,8 +1,8 @@
 import { json, type V2_MetaFunction } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 
-import TweetList from "~/components/TweetList";
-import { listTweets } from "~/models/tweet.server";
+import TweetList from "~/business/tweet/components/TweetList";
+import { listTweets } from "~/business/tweet/services/index.server";
 import { useOptionalUser } from "~/utils";
 
 export const meta: V2_MetaFunction = () => [{ title: "Touitteur" }];
@@ -45,14 +45,7 @@ export default function Index() {
             )}
           </div>
           <div className="m-8 max-w-xl">
-            <TweetList
-              tweets={tweets.map((t) => ({
-                ...t,
-                // TODO Compute this in listTweets?
-                liked: false,
-                followed: false,
-              }))}
-            />
+            <TweetList tweets={tweets} />
           </div>
         </div>
       </div>

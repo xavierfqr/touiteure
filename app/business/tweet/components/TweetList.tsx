@@ -1,13 +1,13 @@
-import type { TweetProps } from "./Tweet";
-import Tweet from "./Tweet";
+import Tweet from "~/business/tweet/components/Tweet";
+import type { Tweet as TweetType } from "~/business/tweet/type";
 
 interface TweetListProps {
-  tweets: TweetProps[];
+  tweets: TweetType[];
 }
 
 export default function TweetList({ tweets }: TweetListProps) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <div className="flex flex-col gap-8">
       {tweets.map((tweet) => (
         <Tweet key={tweet.id} {...tweet} />
       ))}
