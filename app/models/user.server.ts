@@ -20,7 +20,9 @@ export async function getUserByEmail(email: User["email"]) {
 export async function createUser(
   email: User["email"],
   username: User["username"],
-  password: string
+  password: string,
+  firstname: User["firstname"],
+  lastname: User["lastname"]
 ) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -28,6 +30,8 @@ export async function createUser(
     data: {
       email,
       username,
+      firstname,
+      lastname,
       password: {
         create: {
           hash: hashedPassword,
