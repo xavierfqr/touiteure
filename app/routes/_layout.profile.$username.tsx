@@ -10,6 +10,7 @@ import {
 } from "../../@/components/ui/tabs";
 import { useState } from "react";
 import { listTweets } from "../business/tweet/services/index.server";
+import { Bird, Heart } from "lucide-react";
 import TweetList from "../business/tweet/components/TweetList";
 
 export const loader = async ({ params }: LoaderArgs) => {
@@ -51,41 +52,41 @@ export default function Profile() {
       </div>
       <hr className="mb-10" />
 
-      <Tabs defaultValue="Feed">
+      <Tabs defaultValue="feed">
         <TabsList className="flex justify-around rounded bg-gray-100 p-1">
           <TabsTrigger
-            value="Feed"
+            value="feed"
             className="w-full p-0"
             onClick={() => setActiveTab("feed")}
           >
             <button
-              className={`w-full rounded ${
+              className={`flex w-full items-center justify-center gap-2 rounded ${
                 activeTab === "feed" ? "bg-white" : ""
               } px-4 py-2 text-black`}
             >
-              Touites
+              <Bird /> Touites
             </button>
           </TabsTrigger>
           <TabsTrigger
-            value="Likes"
+            value="likes"
             className="w-full p-0"
             onClick={() => setActiveTab("likes")}
           >
             <button
-              className={`w-full rounded ${
+              className={`flex w-full items-center justify-center gap-2 rounded  ${
                 activeTab === "likes" ? "bg-white" : ""
               } px-4 py-2 text-black`}
             >
-              Likes
+              <Heart /> Likes
             </button>
           </TabsTrigger>
         </TabsList>
         <div className="mt-10">
-          <TabsContent value="Feed" className="flex justify-center">
+          <TabsContent value="feed" className="flex justify-center">
             <TweetList tweets={tweets} />
           </TabsContent>
-          <TabsContent value="Likes" className="flex justify-center">
-            Change your password here.
+          <TabsContent value="likes" className="flex justify-center">
+            tweets liked
           </TabsContent>
         </div>
       </Tabs>

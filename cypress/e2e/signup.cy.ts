@@ -6,6 +6,8 @@ describe("signup tests", () => {
       email: `${faker.internet.userName()}@example.com`,
       username: `${faker.internet.userName()}`,
       password: faker.internet.password().slice(0, 2),
+      firstname: faker.internet.userName(),
+      lastname: faker.internet.userName(),
     };
 
     cy.visitAndCheck("/signup");
@@ -13,6 +15,9 @@ describe("signup tests", () => {
     cy.findByRole("textbox", { name: /email/i }).type(loginForm.email);
     cy.findByRole("textbox", { name: /username/i }).type(loginForm.username);
     cy.findByLabelText(/password/i).type(loginForm.password);
+    cy.findByRole("textbox", { name: /firstname/i }).type(loginForm.firstname);
+    cy.findByRole("textbox", { name: /lastname/i }).type(loginForm.lastname);
+
     cy.findByRole("button", { name: /create account/i }).click();
 
     cy.get("#password-error")
@@ -24,6 +29,8 @@ describe("signup tests", () => {
     const loginForm = {
       email: `${faker.internet.userName()}@example.com`,
       password: faker.internet.password(),
+      firstname: faker.internet.userName(),
+      lastname: faker.internet.userName(),
     };
 
     cy.visitAndCheck("/signup");
@@ -31,6 +38,8 @@ describe("signup tests", () => {
     cy.findByRole("textbox", { name: /email/i }).type(loginForm.email);
     cy.findByLabelText(/password/i).type(loginForm.password);
     cy.findByRole("button", { name: /create account/i }).click();
+    cy.findByRole("textbox", { name: /firstname/i }).type(loginForm.firstname);
+    cy.findByRole("textbox", { name: /lastname/i }).type(loginForm.lastname);
 
     cy.get("#username-error")
       .should("be.visible")
@@ -42,6 +51,8 @@ describe("signup tests", () => {
       email: `${faker.internet.userName()}@example.com`,
       username: `alreadyexisting`,
       password: faker.internet.password(),
+      firstname: faker.internet.userName(),
+      lastname: faker.internet.userName(),
     };
 
     cy.visitAndCheck("/signup");
@@ -53,6 +64,8 @@ describe("signup tests", () => {
     cy.findByRole("textbox", { name: /email/i }).type(loginForm.email);
     cy.findByRole("textbox", { name: /username/i }).type(loginForm.username);
     cy.findByLabelText(/password/i).type(loginForm.password);
+    cy.findByRole("textbox", { name: /firstname/i }).type(loginForm.firstname);
+    cy.findByRole("textbox", { name: /lastname/i }).type(loginForm.lastname);
 
     cy.findByRole("button", { name: /create account/i }).click();
 
@@ -68,6 +81,8 @@ describe("signup tests", () => {
       email: `${faker.internet.userName()}@example.com`,
       username: `${faker.internet.userName()}`,
       password: faker.internet.password(),
+      firstname: faker.internet.userName(),
+      lastname: faker.internet.userName(),
     };
 
     cy.then(() => ({ email: loginForm.email })).as("user");
@@ -79,6 +94,9 @@ describe("signup tests", () => {
     cy.findByRole("textbox", { name: /email/i }).type(loginForm.email);
     cy.findByRole("textbox", { name: /username/i }).type(loginForm.username);
     cy.findByLabelText(/password/i).type(loginForm.password);
+    cy.findByRole("textbox", { name: /firstname/i }).type(loginForm.firstname);
+    cy.findByRole("textbox", { name: /lastname/i }).type(loginForm.lastname);
+
     cy.findByRole("button", { name: /create account/i }).click();
 
     cy.cleanupUser();

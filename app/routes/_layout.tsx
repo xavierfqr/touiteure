@@ -26,12 +26,12 @@ export default function Layout() {
 
   const TABS = [
     { name: "Feed", icon: MessageSquare, url: "." },
-    { name: "Logout", icon: LogOut, url: AbsoluteRoutes.logout },
     {
       name: "Profile",
       icon: User,
       url: AbsoluteRoutes.profile.replace(":username", user?.username ?? ""),
     },
+    { name: "Logout", icon: LogOut, url: AbsoluteRoutes.logout },
   ];
 
   return (
