@@ -23,6 +23,18 @@ async function seed() {
           hash: hashedPassword,
         },
       },
+      tweets: {
+        createMany: {
+          data: [
+            { content: "Hello World" },
+            { content: "Ca va vous ?" },
+            {
+              content:
+                "La catastrophe minière de Coalbrook se produit en 1960 dans la mine de charbon du même nom, en Afrique du Sud, et plus précisément dans l'État Libre d'Orange.",
+            },
+          ],
+        },
+      },
     },
   });
 

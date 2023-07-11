@@ -19,3 +19,9 @@ db.init: db.start
 
 db.connect:
 	psql postgresql://skeleton:skeleton@localhost:5432/skeleton
+
+prisma.generate_client:
+	npx prisma generate
+
+prisma.apply_migrations:
+	npx prisma migrate deploy
