@@ -1,6 +1,7 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import type { ChangeEvent } from "react";
 import { useEffect, useRef } from "react";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -11,6 +12,12 @@ import {
 } from "~/business/user/services/index.server";
 import { requireUserId } from "../session.server";
 import { Switch } from "../ui/components/ui/switch";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../ui/components/ui/popover";
+import { MoreVertical, Replace, Trash } from "lucide-react";
 
 const defaultFormResponse = {
   fields: {
@@ -68,7 +75,10 @@ export const action = async ({ request }: ActionArgs) => {
         { status: 400 }
       );
     }
-    return json({ ...defaultFormResponse, formError: "aie" }, { status: 400 });
+    return json(
+      { ...defaultFormResponse, formError: "Failed to apply changes" },
+      { status: 400 }
+    );
   }
 };
 
@@ -76,9 +86,20 @@ export default function LoginPage() {
   const { user } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const firstnameRef = useRef<HTMLInputElement>(null);
   const lastnameRef = useRef<HTMLInputElement>(null);
   const biographyRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleFileChangeButton = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    void file;
+    // TODO: handle image upload
+  };
 
   useEffect(() => {
     if (actionData?.errors?.firstname) {
@@ -94,13 +115,40 @@ export default function LoginPage() {
     <div className="flex flex-col justify-center">
       <Form method="post" className="space-y-6">
         <div>
-          <div className="flex flex-col justify-center">
+          <div className="relative mb-10 w-fit">
             <img
               className="rounded-full"
               src={"https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
               alt="profile"
               width={200}
             />
+            <div className="absolute right-[-10px] top-0 flex flex-col">
+              <Popover>
+                <PopoverTrigger>
+                  <MoreVertical />
+                </PopoverTrigger>
+                <PopoverContent className="w-fit cursor-pointer px-2 py-1">
+                  <div
+                    className="flex  items-center gap-4 p-2"
+                    onClick={handleFileChangeButton}
+                  >
+                    <Replace />
+                    Change picture
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                  <hr />
+                  <div className="flex items-center gap-4 p-2">
+                    <Trash />
+                    Remove picture
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
           <label
             htmlFor="firstname"
@@ -120,7 +168,7 @@ export default function LoginPage() {
               autoComplete="firstname"
               aria-invalid={actionData?.errors?.firstname ? true : undefined}
               aria-describedby="firstname-error"
-              className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+              className="w-full rounded border border-gray-300 px-2 py-1 text-lg"
             />
             {actionData?.errors?.firstname ? (
               <div className="pt-1 text-red-700" id="firstname-error">
@@ -149,7 +197,7 @@ export default function LoginPage() {
               autoComplete="lastname"
               aria-invalid={actionData?.errors?.lastname ? true : undefined}
               aria-describedby="lastname-error"
-              className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+              className="w-full rounded border border-gray-300 px-2 py-1 text-lg"
             />
             {actionData?.errors?.lastname ? (
               <div className="pt-1 text-red-700" id="lastname-error">
@@ -174,10 +222,11 @@ export default function LoginPage() {
               id="biography"
               ref={biographyRef}
               name="biography"
+              placeholder="Tell us about you..."
               autoComplete="biography"
               aria-invalid={actionData?.errors?.biography ? true : undefined}
               aria-describedby="biography-error"
-              className="h-24 w-full resize-none rounded border border-gray-500 px-2 py-1 text-lg"
+              className="h-24 w-full resize-none rounded border border-gray-300 px-2 py-1 text-lg"
               maxLength={200}
             />
             {actionData?.errors?.biography ? (
@@ -188,26 +237,27 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <Switch
-          defaultValue={
-            actionData
-              ? actionData.fields.isFollowOnly
-              : user.isFollowOnly
-              ? "on"
-              : "off"
-          }
-          defaultChecked={
-            actionData
-              ? actionData.fields.isFollowOnly === "on"
-                ? true
-                : false
-              : user.isFollowOnly
-          }
-          name="isFollowOnly"
-          id="isFollowOnly"
-        >
+        <div className="flex items-center gap-2">
+          <Switch
+            defaultValue={
+              actionData
+                ? actionData.fields.isFollowOnly
+                : user.isFollowOnly
+                ? "on"
+                : "off"
+            }
+            defaultChecked={
+              actionData
+                ? actionData.fields.isFollowOnly === "on"
+                  ? true
+                  : false
+                : user.isFollowOnly
+            }
+            name="isFollowOnly"
+            id="isFollowOnly"
+          />
           Follow only
-        </Switch>
+        </div>
 
         <button
           type="submit"
