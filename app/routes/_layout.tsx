@@ -4,7 +4,7 @@ import { AbsoluteRoutes } from "../routes";
 import { getUserId } from "../session.server";
 
 import { Bird, LogOut, MessageSquare, User } from "lucide-react";
-import { getUserById } from "../models/user.server";
+import { getUserById } from "../business/user/services/index.server";
 
 const NOT_CONNECTED_TABS = [
   { name: "Login", url: AbsoluteRoutes.login },

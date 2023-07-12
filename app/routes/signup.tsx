@@ -7,7 +7,7 @@ import {
   createUser,
   getUserByEmail,
   getUserByUsername,
-} from "~/models/user.server";
+} from "~/business/user/services/index.server";
 import { createUserSession, getUserId } from "~/session.server";
 import { safeRedirect, validateEmail, validateStringInput } from "~/utils";
 
