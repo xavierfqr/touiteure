@@ -3,7 +3,7 @@ import { Heart, UserPlus2 } from "lucide-react";
 
 import type { Tweet } from "~/business/tweet/type";
 import { formatISODate } from "~/technical/formatDate";
-import { AbsoluteRoutes } from "../../../routes";
+import { AbsoluteRoutes } from "~/routes";
 
 type TweetProps = Tweet;
 

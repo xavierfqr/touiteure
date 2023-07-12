@@ -41,6 +41,25 @@ export async function createUser(
   });
 }
 
+export async function updateUser(
+  userId: User["id"],
+  updatedUser: {
+    firstname?: User["firstname"];
+    lastname?: User["lastname"];
+    biography?: User["biography"];
+    isFollowOnly?: User["isFollowOnly"];
+  }
+) {
+  return prisma.user.update({
+    data: {
+      ...updatedUser,
+    },
+    where: {
+      id: userId,
+    },
+  });
+}
+
 export async function deleteUserByEmail(email: User["email"]) {
   return prisma.user.delete({ where: { email } });
 }
