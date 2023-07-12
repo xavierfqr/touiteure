@@ -1,5 +1,4 @@
-import { type LoaderArgs, json } from "@remix-run/node";
-import invariant from "tiny-invariant";
+import { json, type LoaderArgs } from "@remix-run/node";
 import {
   Link,
   NavLink,
@@ -7,21 +6,21 @@ import {
   useLoaderData,
   useLocation,
 } from "@remix-run/react";
-import { getUserByUsername } from "../business/user/services/index.server";
-import { Tabs, TabsList, TabsTrigger } from "../ui/components/ui/tabs";
 import { Bird, Heart } from "lucide-react";
-import { getUserId } from "../session.server";
+import invariant from "tiny-invariant";
+
+import { getUserByUsername } from "~/business/user/services/index.server";
+import { getUserId } from "~/business/user/services/session.server";
+import { Tabs, TabsList, TabsTrigger } from "~/ui/components/ui/tabs";
 
 export const loader = async ({ params, request }: LoaderArgs) => {
-  invariant(params.username, "username not found");
+  invariant(params.username, "username not found in params");
 
-  const currentUserId = await getUserId(request);
+  const loggedUserId = await getUserId(request);
   const user = await getUserByUsername(params.username);
-
-  invariant(currentUserId, "user not found");
   invariant(user, "user not found");
 
-  const isCurrentUserProfile = currentUserId === user.id;
+  const isCurrentUserProfile = loggedUserId === user.id;
   return json({ user, isCurrentUserProfile });
 };
 

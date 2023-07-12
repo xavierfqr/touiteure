@@ -1,4 +1,4 @@
-import { validateEmail, validateStringInput } from "../utils";
+import { validateEmail, validateStringInput } from "~/utils";
 
 describe("Verify if email is valid with validateEmail", () => {
   it("should return false for non-emails", () => {

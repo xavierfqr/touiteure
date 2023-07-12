@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { touitosBuilder } from "../app/business/user/utils";
+
+import { touitosBuilder } from "~/business/user/utils";
 
 const prisma = new PrismaClient();
 

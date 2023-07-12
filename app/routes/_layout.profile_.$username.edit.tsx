@@ -1,6 +1,7 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import { MoreVertical, Replace, Trash } from "lucide-react";
 import type { ChangeEvent } from "react";
 import { useEffect, useRef } from "react";
 import invariant from "tiny-invariant";
@@ -10,14 +11,13 @@ import {
   getUserByUsername,
   updateUser,
 } from "~/business/user/services/index.server";
-import { requireUserId } from "../session.server";
-import { Switch } from "../ui/components/ui/switch";
+import { requireUserId } from "~/business/user/services/session.server";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../ui/components/ui/popover";
-import { MoreVertical, Replace, Trash } from "lucide-react";
+} from "~/ui/components/ui/popover";
+import { Switch } from "~/ui/components/ui/switch";
 
 const defaultFormResponse = {
   fields: {
@@ -39,7 +39,7 @@ const schema = z.object({
   firstname: z.string().min(1, "Firstname is required"),
   lastname: z.string().min(1, "Lastname is required"),
   biography: z.string().max(200),
-  isFollowOnly: z.string().optional(),
+  isFollowOnly: z.enum(["on", "off"]).optional(),
 });
 
 export const loader = async ({ params }: LoaderArgs) => {

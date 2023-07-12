@@ -8,7 +8,10 @@ import {
   getUserByEmail,
   getUserByUsername,
 } from "~/business/user/services/index.server";
-import { createUserSession, getUserId } from "~/session.server";
+import {
+  createUserSession,
+  getUserId,
+} from "~/business/user/services/session.server";
 import { safeRedirect, validateEmail, validateStringInput } from "~/utils";
 
 const defaultErrors = {

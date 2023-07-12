@@ -1,10 +1,11 @@
 import { TabsContent } from "@radix-ui/react-tabs";
-import { type LoaderArgs, json } from "@remix-run/node";
-import invariant from "tiny-invariant";
-import TweetList from "../business/tweet/components/TweetList";
-import { listTweets } from "../business/tweet/services/index.server";
-import { getUserByUsername } from "../business/user/services/index.server";
+import { json, type LoaderArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import invariant from "tiny-invariant";
+
+import TweetList from "~/business/tweet/components/TweetList";
+import { listTweets } from "~/business/tweet/services/index.server";
+import { getUserByUsername } from "~/business/user/services/index.server";
 
 export const loader = async ({ params }: LoaderArgs) => {
   invariant(params.username, "username not found");

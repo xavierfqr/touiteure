@@ -1,10 +1,10 @@
-import { type LoaderArgs, json } from "@remix-run/node";
-import { useLoaderData, Link, Form, NavLink, Outlet } from "@remix-run/react";
-import { AbsoluteRoutes } from "../routes";
-import { getUserId } from "../session.server";
-
+import { json, type LoaderArgs } from "@remix-run/node";
+import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import { Bird, LogOut, MessageSquare, User } from "lucide-react";
-import { getUserById } from "../business/user/services/index.server";
+
+import { getUserById } from "~/business/user/services/index.server";
+import { getUserId } from "~/business/user/services/session.server";
+import { AbsoluteRoutes } from "~/routes";
 
 const NOT_CONNECTED_TABS = [
   { name: "Login", url: AbsoluteRoutes.login },
