@@ -48,7 +48,7 @@ export default function Profile() {
         <TabsList className="flex justify-around rounded bg-gray-100 p-1">
           <TabsTrigger value="feed" className="w-full p-0">
             <Link
-              to=""
+              to="feed"
               className={`flex w-full items-center justify-center gap-2 rounded ${
                 activeTab === "feed" ? "bg-white" : ""
               } px-4 py-1 text-black`}
