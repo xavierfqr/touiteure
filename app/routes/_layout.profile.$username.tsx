@@ -1,21 +1,32 @@
 import { type LoaderArgs, json } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { Link, Outlet, useLoaderData, useLocation } from "@remix-run/react";
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useLoaderData,
+  useLocation,
+} from "@remix-run/react";
 import { getUserByUsername } from "../business/user/services/index.server";
 import { Tabs, TabsList, TabsTrigger } from "../ui/components/ui/tabs";
 import { Bird, Heart } from "lucide-react";
+import { getUserId } from "../session.server";
 
-export const loader = async ({ params }: LoaderArgs) => {
+export const loader = async ({ params, request }: LoaderArgs) => {
   invariant(params.username, "username not found");
 
+  const currentUserId = await getUserId(request);
   const user = await getUserByUsername(params.username);
+
+  invariant(currentUserId, "user not found");
   invariant(user, "user not found");
 
-  return json({ user });
+  const isCurrentUserProfile = currentUserId === user.id;
+  return json({ user, isCurrentUserProfile });
 };
 
 export default function Profile() {
-  const { user } = useLoaderData<typeof loader>();
+  const { user, isCurrentUserProfile } = useLoaderData<typeof loader>();
   const { pathname } = useLocation();
   const activeTab = pathname.substring(pathname.lastIndexOf("/") + 1);
 
@@ -29,10 +40,18 @@ export default function Profile() {
             alt="profile"
             width={200}
           />
-
-          <button className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400">
-            Follow / Unfollow / Edit
-          </button>
+          {isCurrentUserProfile ? (
+            <NavLink
+              to="edit"
+              className="w-full rounded bg-blue-500 px-4 py-2 text-center text-white hover:bg-blue-600 focus:bg-blue-400"
+            >
+              Edit
+            </NavLink>
+          ) : (
+            <button className="w-full  rounded bg-blue-500 px-4 py-2 text-center text-white hover:bg-blue-600 focus:bg-blue-400">
+              Follow / Unfollow
+            </button>
+          )}
         </div>
         <div>
           <b className="text-6xl">
