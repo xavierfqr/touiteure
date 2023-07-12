@@ -3,6 +3,7 @@ import { Heart, UserPlus2 } from "lucide-react";
 
 import type { Tweet } from "~/business/tweet/type";
 import { formatISODate } from "~/technical/formatDate";
+import { AbsoluteRoutes } from "../../../routes";
 
 type TweetProps = Tweet;
 
@@ -16,7 +17,10 @@ export default function Tweet({
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-slate-300 p-4">
       <div className="flex items-center gap-2">
-        <Link className="font-bold" to={`/user/${id}`}>
+        <Link
+          className="font-bold"
+          to={AbsoluteRoutes.profile.replace(":username", username)}
+        >
           @{username}
         </Link>
 

@@ -7,9 +7,17 @@ import {
   createUser,
   getUserByEmail,
   getUserByUsername,
-} from "~/models/user.server";
+} from "~/business/user/services/index.server";
 import { createUserSession, getUserId } from "~/session.server";
-import { safeRedirect, validateEmail, validateUsername } from "~/utils";
+import { safeRedirect, validateEmail, validateStringInput } from "~/utils";
+
+const defaultErrors = {
+  email: null,
+  password: null,
+  username: null,
+  firstname: null,
+  lastname: null,
+};
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await getUserId(request);
@@ -22,23 +30,21 @@ export const action = async ({ request }: ActionArgs) => {
   const email = formData.get("email");
   const username = formData.get("username");
   const password = formData.get("password");
+  const firstname = formData.get("firstname");
+  const lastname = formData.get("lastname");
   const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
 
   if (!validateEmail(email)) {
     return json(
-      { errors: { email: "Email is invalid", password: null, username: null } },
+      { errors: { ...defaultErrors, email: "Email is invalid" } },
       { status: 400 }
     );
   }
 
-  if (!validateUsername(username)) {
+  if (!validateStringInput(username)) {
     return json(
       {
-        errors: {
-          email: null,
-          password: null,
-          username: "Username is required",
-        },
+        errors: { ...defaultErrors, username: "Username is required" },
       },
       { status: 400 }
     );
@@ -47,11 +53,25 @@ export const action = async ({ request }: ActionArgs) => {
   if (username.length < 4) {
     return json(
       {
-        errors: {
-          email: null,
-          password: null,
-          username: "Username is too short",
-        },
+        errors: { ...defaultErrors, username: "Username is too short" },
+      },
+      { status: 400 }
+    );
+  }
+
+  if (!validateStringInput(firstname)) {
+    return json(
+      {
+        errors: { ...defaultErrors, firstname: "Firstname is required" },
+      },
+      { status: 400 }
+    );
+  }
+
+  if (!validateStringInput(lastname)) {
+    return json(
+      {
+        errors: { ...defaultErrors, lastname: "Lastname is required" },
       },
       { status: 400 }
     );
@@ -60,11 +80,7 @@ export const action = async ({ request }: ActionArgs) => {
   if (typeof password !== "string" || password.length === 0) {
     return json(
       {
-        errors: {
-          email: null,
-          password: "Password is required",
-          username: null,
-        },
+        errors: { ...defaultErrors, password: "Password is required" },
       },
       { status: 400 }
     );
@@ -73,11 +89,7 @@ export const action = async ({ request }: ActionArgs) => {
   if (password.length < 8) {
     return json(
       {
-        errors: {
-          email: null,
-          password: "Password is too short",
-          username: null,
-        },
+        errors: { ...defaultErrors, password: "Password is too short" },
       },
       { status: 400 }
     );
@@ -88,8 +100,7 @@ export const action = async ({ request }: ActionArgs) => {
     return json(
       {
         errors: {
-          email: null,
-          password: null,
+          ...defaultErrors,
           username: "A user already exists with this username",
         },
       },
@@ -103,16 +114,15 @@ export const action = async ({ request }: ActionArgs) => {
     return json(
       {
         errors: {
+          ...defaultErrors,
           email: "A user already exists with this email",
-          password: null,
-          username: null,
         },
       },
       { status: 400 }
     );
   }
 
-  const user = await createUser(email, username, password);
+  const user = await createUser(email, username, password, firstname, lastname);
 
   return createUserSession({
     redirectTo,
@@ -131,6 +141,8 @@ export default function Join() {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const usernameRef = useRef<HTMLInputElement>(null);
+  const firstnameRef = useRef<HTMLInputElement>(null);
+  const lastnameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (actionData?.errors?.email) {
@@ -138,6 +150,10 @@ export default function Join() {
     } else if (actionData?.errors?.username) {
       usernameRef.current?.focus();
     } else if (actionData?.errors?.password) {
+      passwordRef.current?.focus();
+    } else if (actionData?.errors?.firstname) {
+      passwordRef.current?.focus();
+    } else if (actionData?.errors?.lastname) {
       passwordRef.current?.focus();
     }
   }, [actionData]);
@@ -195,6 +211,58 @@ export default function Join() {
               {actionData?.errors?.username ? (
                 <div className="pt-1 text-red-700" id="username-error">
                   {actionData.errors.username}
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="firstname"
+              className="block text-sm font-medium text-gray-700"
+            >
+              firstname
+            </label>
+            <div className="mt-1">
+              <input
+                id="firstname"
+                ref={firstnameRef}
+                name="firstname"
+                type="firstname"
+                autoComplete="firstname"
+                aria-invalid={actionData?.errors?.firstname ? true : undefined}
+                aria-describedby="firstname-error"
+                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+              />
+              {actionData?.errors?.firstname ? (
+                <div className="pt-1 text-red-700" id="firstname-error">
+                  {actionData.errors.firstname}
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="lastname"
+              className="block text-sm font-medium text-gray-700"
+            >
+              lastname
+            </label>
+            <div className="mt-1">
+              <input
+                id="lastname"
+                ref={lastnameRef}
+                name="lastname"
+                type="lastname"
+                autoComplete="lastname"
+                aria-invalid={actionData?.errors?.lastname ? true : undefined}
+                aria-describedby="lastname-error"
+                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+              />
+              {actionData?.errors?.lastname ? (
+                <div className="pt-1 text-red-700" id="lastname-error">
+                  {actionData.errors.lastname}
                 </div>
               ) : null}
             </div>

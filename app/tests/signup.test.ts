@@ -1,4 +1,4 @@
-import { validateEmail, validateUsername } from "../utils";
+import { validateEmail, validateStringInput } from "../utils";
 
 describe("Verify if email is valid with validateEmail", () => {
   it("should return false for non-emails", () => {
@@ -16,12 +16,12 @@ describe("Verify if email is valid with validateEmail", () => {
 
 describe("Verify if username is valid", () => {
   it("should return false for non valid username", () => {
-    expect(validateUsername(undefined)).toBe(false);
-    expect(validateUsername(null)).toBe(false);
-    expect(validateUsername("")).toBe(false);
+    expect(validateStringInput(undefined)).toBe(false);
+    expect(validateStringInput(null)).toBe(false);
+    expect(validateStringInput("")).toBe(false);
   });
 
   it("should return true for valid usernames", () => {
-    expect(validateUsername("validUsername")).toBe(true);
+    expect(validateStringInput("validUsername")).toBe(true);
   });
 });
