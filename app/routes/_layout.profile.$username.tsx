@@ -49,7 +49,7 @@ export default function Profile() {
           {isCurrentUserProfile ? (
             <NavLink
               to="edit"
-              className="w-full rounded bg-blue-500 px-4 py-2 text-center text-white hover:bg-blue-600 focus:bg-blue-400"
+              className="w-full rounded border-2 border-blue-500 px-4 py-2 text-center text-blue-500 hover:border-blue-600 hover:bg-blue-600 hover:text-white focus:border-blue-400 focus:bg-blue-400 focus:text-white"
             >
               Edit
             </NavLink>
