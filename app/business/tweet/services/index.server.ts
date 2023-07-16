@@ -36,6 +36,7 @@ export async function listTweets({
       author: {
         ...rest,
         followed: !!_count.followedBy,
+        canFollow: userId ? userId !== t.author.id : false,
       },
       liked: false,
     };

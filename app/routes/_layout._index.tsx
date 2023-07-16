@@ -4,7 +4,6 @@ import { useLoaderData } from "@remix-run/react";
 import TweetList from "~/business/tweet/components/TweetList";
 import { listTweets } from "~/business/tweet/services/index.server";
 import { getUserId } from "~/business/user/services/session.server";
-import { useOptionalUser } from "~/utils";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await getUserId(request);
@@ -13,19 +12,10 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export default function Layout() {
   const { tweets } = useLoaderData<typeof loader>();
-  const user = useOptionalUser();
 
   return (
     <div className="flex h-full min-h-screen flex-col">
-      <TweetList
-        tweets={tweets.map((t) => ({
-          ...t,
-          author: {
-            ...t.author,
-            canFollow: user ? user.id !== t.author.id : false,
-          },
-        }))}
-      />
+      <TweetList tweets={tweets} />
     </div>
   );
 }
