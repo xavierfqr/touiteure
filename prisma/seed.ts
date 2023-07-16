@@ -17,12 +17,17 @@ const thomasLeTrain = touitosBuilder(
   "thomas",
   "letrain"
 );
+const johnDoe = touitosBuilder("john.doe@mail.com", "jojo", "John", "Doe");
 
 async function seed() {
   // cleanup the existing database
   await prisma.user
     .deleteMany({
-      where: { email: { in: ["touitos@gmail.com", "thomas@gmail.com"] } },
+      where: {
+        email: {
+          in: ["touitos@gmail.com", "thomas@gmail.com", "john.doe@mail.com"],
+        },
+      },
     })
     .catch(() => {
       // no worries if it doesn't exist yet
@@ -78,6 +83,30 @@ async function seed() {
             { content: "J'aime rire 🙂" },
           ],
         },
+      },
+    },
+  });
+
+  const johnPassword = await bcrypt.hash("johndoee", 10);
+
+  await prisma.user.create({
+    data: {
+      email: johnDoe.email,
+      username: johnDoe.username,
+      firstname: johnDoe.firstname,
+      lastname: johnDoe.lastname,
+      password: {
+        create: {
+          hash: johnPassword,
+        },
+      },
+      tweets: {
+        createMany: {
+          data: [{ content: "Hey!" }],
+        },
+      },
+      following: {
+        connect: { email: thomasLeTrain.email },
       },
     },
   });
