@@ -3,10 +3,12 @@ import {
   Link,
   NavLink,
   Outlet,
+  useFetcher,
   useLoaderData,
   useLocation,
 } from "@remix-run/react";
 import { Bird, Heart } from "lucide-react";
+import { useState } from "react";
 import invariant from "tiny-invariant";
 
 import {
@@ -35,6 +37,18 @@ export default function Profile() {
     useLoaderData<typeof loader>();
   const { pathname } = useLocation();
   const activeTab = pathname.substring(pathname.lastIndexOf("/") + 1);
+  const fetcher = useFetcher();
+  const pendingFollowToggle = fetcher.state !== "idle";
+  const [isFollowButtonHovered, setIsFollowButtonHovered] = useState(false);
+
+  const optimisticFollowed = pendingFollowToggle
+    ? fetcher.formData?.get("shouldFollow") === "true"
+    : followed;
+  const followButtonClassName = optimisticFollowed
+    ? isFollowButtonHovered
+      ? "w-full rounded bg-red-500 px-4 py-2 text-center text-white hover:bg-red-600 focus:bg-red-400"
+      : "w-full rounded bg-green-500 px-4 py-2 text-center text-white hover:bg-green-600 focus:bg-green-400"
+    : "w-full rounded bg-blue-500 px-4 py-2 text-center text-white hover:bg-blue-600 focus:bg-blue-400";
 
   return (
     <div>
@@ -53,14 +67,29 @@ export default function Profile() {
             >
               Edit
             </NavLink>
-          ) : followed ? (
-            <button className="w-full  rounded bg-green-500 px-4 py-2 text-center text-white hover:bg-green-600 focus:bg-green-400">
-              Followed
-            </button>
           ) : (
-            <button className="w-full  rounded bg-blue-500 px-4 py-2 text-center text-white hover:bg-blue-600 focus:bg-blue-400">
-              Follow
-            </button>
+            <fetcher.Form action="/follow" method="post" className="w-full">
+              <input
+                type="hidden"
+                value={optimisticFollowed ? "false" : "true"}
+                name="shouldFollow"
+              />
+
+              <button
+                type="submit"
+                name="followedId"
+                value={user.id}
+                className={followButtonClassName}
+                onMouseEnter={() => setIsFollowButtonHovered(true)}
+                onMouseLeave={() => setIsFollowButtonHovered(false)}
+              >
+                {optimisticFollowed
+                  ? isFollowButtonHovered
+                    ? "Unfollow"
+                    : "Followed"
+                  : "Follow"}
+              </button>
+            </fetcher.Form>
           )}
         </div>
         <div>
