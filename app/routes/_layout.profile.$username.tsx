@@ -9,7 +9,10 @@ import {
 import { Bird, Heart } from "lucide-react";
 import invariant from "tiny-invariant";
 
-import { getUserByUsername } from "~/business/user/services/index.server";
+import {
+  getUserByUsername,
+  isUserFollowed,
+} from "~/business/user/services/index.server";
 import { getUserId } from "~/business/user/services/session.server";
 import { Tabs, TabsList, TabsTrigger } from "~/ui/components/ui/tabs";
 
@@ -19,13 +22,17 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   const loggedUserId = await getUserId(request);
   const user = await getUserByUsername(params.username);
   invariant(user, "user not found");
+  const followed = loggedUserId
+    ? await isUserFollowed(user.id, loggedUserId)
+    : false;
 
   const isCurrentUserProfile = loggedUserId === user.id;
-  return json({ user, isCurrentUserProfile });
+  return json({ user, isCurrentUserProfile, followed });
 };
 
 export default function Profile() {
-  const { user, isCurrentUserProfile } = useLoaderData<typeof loader>();
+  const { user, isCurrentUserProfile, followed } =
+    useLoaderData<typeof loader>();
   const { pathname } = useLocation();
   const activeTab = pathname.substring(pathname.lastIndexOf("/") + 1);
 
@@ -46,9 +53,13 @@ export default function Profile() {
             >
               Edit
             </NavLink>
+          ) : followed ? (
+            <button className="w-full  rounded bg-green-500 px-4 py-2 text-center text-white hover:bg-green-600 focus:bg-green-400">
+              Followed
+            </button>
           ) : (
             <button className="w-full  rounded bg-blue-500 px-4 py-2 text-center text-white hover:bg-blue-600 focus:bg-blue-400">
-              Follow / Unfollow
+              Follow
             </button>
           )}
         </div>

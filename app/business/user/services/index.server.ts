@@ -92,3 +92,13 @@ export async function verifyLogin(
 
   return userWithoutPassword;
 }
+
+
+export async function isUserFollowed(followedId: string, userId: string) {
+  const result = await prisma.user.findUnique({
+    where: { id: followedId },
+    select: { _count: { select: { followedBy: { where: { id: userId } } } } },
+  });
+
+  return result?._count.followedBy === 1;
+}
