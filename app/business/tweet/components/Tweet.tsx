@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
 import { Heart, UserPlus2 } from "lucide-react";
 
 import type { Tweet } from "~/business/tweet/type";
@@ -8,7 +8,7 @@ import { AbsoluteRoutes } from "~/routes";
 type TweetProps = Tweet;
 
 export default function Tweet({
-  author: { id, username, followed },
+  author: { id, username, followed, canFollow },
   content,
   attachment,
   liked,
@@ -24,17 +24,30 @@ export default function Tweet({
           @{username}
         </Link>
 
-        <button>
-          {followed ? (
-            <UserPlus2
-              className="text-emerald-400"
-              size={20}
-              strokeWidth={2.5}
+        {canFollow ? (
+          <Form action="/follow" method="post">
+            <input
+              type="hidden"
+              value={followed ? "false" : "true"}
+              name="shouldFollow"
             />
-          ) : (
-            <UserPlus2 className="text-sky-500" size={20} strokeWidth={2.5} />
-          )}
-        </button>
+            <button type="submit" name="followedId" value={id}>
+              {followed ? (
+                <UserPlus2
+                  className="text-emerald-400"
+                  size={20}
+                  strokeWidth={2.5}
+                />
+              ) : (
+                <UserPlus2
+                  className="text-sky-500"
+                  size={20}
+                  strokeWidth={2.5}
+                />
+              )}
+            </button>
+          </Form>
+        ) : null}
       </div>
       <p className="text-lg font-light">{content}</p>
       {attachment ? <img src={attachment} alt="Attachment" /> : null}

@@ -33,36 +33,6 @@ async function seed() {
       // no worries if it doesn't exist yet
     });
 
-  const hashedPassword = await bcrypt.hash("secretpassword", 10);
-
-  await prisma.user.create({
-    data: {
-      email: originalTouitos.email,
-      username: originalTouitos.username,
-      firstname: originalTouitos.firstname,
-      lastname: originalTouitos.lastname,
-      password: {
-        create: {
-          hash: hashedPassword,
-        },
-      },
-      tweets: {
-        createMany: {
-          data: [
-            { content: "Hello World" },
-            { content: "Ca va vous ?" },
-            {
-              content:
-                "La catastrophe minière de Coalbrook se produit en 1960 dans la mine de charbon du même nom, en Afrique du Sud, et plus précisément dans l'État Libre d'Orange.",
-              attachment:
-                "https://plus.unsplash.com/premium_photo-1670793631505-98e872b02418",
-            },
-          ],
-        },
-      },
-    },
-  });
-
   const thomasPassword = await bcrypt.hash("thomaspassword", 10);
 
   await prisma.user.create({
@@ -105,8 +75,38 @@ async function seed() {
           data: [{ content: "Hey!" }],
         },
       },
+    },
+  });
+
+  const hashedPassword = await bcrypt.hash("secretpassword", 10);
+
+  await prisma.user.create({
+    data: {
+      email: originalTouitos.email,
+      username: originalTouitos.username,
+      firstname: originalTouitos.firstname,
+      lastname: originalTouitos.lastname,
+      password: {
+        create: {
+          hash: hashedPassword,
+        },
+      },
+      tweets: {
+        createMany: {
+          data: [
+            { content: "Hello World" },
+            { content: "Ca va vous ?" },
+            {
+              content:
+                "La catastrophe minière de Coalbrook se produit en 1960 dans la mine de charbon du même nom, en Afrique du Sud, et plus précisément dans l'État Libre d'Orange.",
+              attachment:
+                "https://plus.unsplash.com/premium_photo-1670793631505-98e872b02418",
+            },
+          ],
+        },
+      },
       following: {
-        connect: { email: thomasLeTrain.email },
+        connect: { email: johnDoe.email },
       },
     },
   });
