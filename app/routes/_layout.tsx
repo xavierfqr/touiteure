@@ -55,7 +55,7 @@ export default function Layout() {
                         <Form action="/logout" method="post">
                           <button
                             type="submit"
-                            className="block flex items-center gap-4 p-4 text-xl"
+                            className="flex items-center gap-4 p-4 text-xl"
                           >
                             <Icon />
                             {tab.name}
@@ -68,7 +68,7 @@ export default function Layout() {
                     <li key={tab.name}>
                       <NavLink
                         className={({ isActive }) =>
-                          `block flex items-center gap-4 p-4 text-xl ${
+                          `flex items-center gap-4 p-4 text-xl ${
                             isActive ? "bg-white text-blue-500" : ""
                           }`
                         }
@@ -84,7 +84,7 @@ export default function Layout() {
                   <li key={tab.name}>
                     <NavLink
                       className={({ isActive }) =>
-                        `block flex gap-4 p-4 text-xl ${
+                        `flex gap-4 p-4 text-xl ${
                           isActive ? "bg-white text-blue-500" : ""
                         }`
                       }

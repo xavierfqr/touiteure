@@ -1,7 +1,14 @@
-import { json, type ActionFunction } from "@remix-run/node";
+import {
+  json,
+  redirect,
+  type ActionFunction,
+  type LoaderFunction,
+} from "@remix-run/node";
 
 import { follow, unfollow } from "~/business/user/services/index.server";
 import { requireUserId } from "~/business/user/services/session.server";
+
+export const loader: LoaderFunction = () => redirect("/");
 
 export const action: ActionFunction = async ({ request }) => {
   const userId = await requireUserId(request);
