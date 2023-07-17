@@ -10,6 +10,7 @@ type TweetAuthor = {
   id: string;
   username: string;
   followed: boolean;
+  canFollow: boolean;
 };
 
 export type Tweet = BaseTweet & { author: TweetAuthor };

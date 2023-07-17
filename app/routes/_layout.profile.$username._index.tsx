@@ -1,5 +1,5 @@
-import { redirect, type LoaderArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async () => {
   return redirect("feed");
 };

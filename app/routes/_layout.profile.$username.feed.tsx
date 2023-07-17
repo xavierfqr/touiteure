@@ -6,14 +6,16 @@ import invariant from "tiny-invariant";
 import TweetList from "~/business/tweet/components/TweetList";
 import { listTweets } from "~/business/tweet/services/index.server";
 import { getUserByUsername } from "~/business/user/services/index.server";
+import { getUserId } from "~/business/user/services/session.server";
 
-export const loader = async ({ params }: LoaderArgs) => {
-  invariant(params.username, "username not found");
+export const loader = async ({ params, request }: LoaderArgs) => {
+  invariant(params.username, "username not in params");
 
-  const user = await getUserByUsername(params.username);
-  invariant(user, "user not found");
+  const author = await getUserByUsername(params.username);
+  invariant(author, "author not found");
 
-  const tweets = await listTweets(user.id);
+  const userId = await getUserId(request);
+  const tweets = await listTweets({ authorId: author.id, userId });
 
   return json({ tweets });
 };

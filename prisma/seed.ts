@@ -17,16 +17,66 @@ const thomasLeTrain = touitosBuilder(
   "thomas",
   "letrain"
 );
+const johnDoe = touitosBuilder("john.doe@mail.com", "jojo", "John", "Doe");
 
 async function seed() {
   // cleanup the existing database
   await prisma.user
     .deleteMany({
-      where: { email: { in: ["touitos@gmail.com", "thomas@gmail.com"] } },
+      where: {
+        email: {
+          in: ["touitos@gmail.com", "thomas@gmail.com", "john.doe@mail.com"],
+        },
+      },
     })
     .catch(() => {
       // no worries if it doesn't exist yet
     });
+
+  const thomasPassword = await bcrypt.hash("thomaspassword", 10);
+
+  await prisma.user.create({
+    data: {
+      email: thomasLeTrain.email,
+      username: thomasLeTrain.username,
+      firstname: thomasLeTrain.firstname,
+      lastname: thomasLeTrain.lastname,
+      password: {
+        create: {
+          hash: thomasPassword,
+        },
+      },
+      tweets: {
+        createMany: {
+          data: [
+            { content: "Salut moi c'est Thomas" },
+            { content: "J'aime rire 🙂" },
+          ],
+        },
+      },
+    },
+  });
+
+  const johnPassword = await bcrypt.hash("johndoee", 10);
+
+  await prisma.user.create({
+    data: {
+      email: johnDoe.email,
+      username: johnDoe.username,
+      firstname: johnDoe.firstname,
+      lastname: johnDoe.lastname,
+      password: {
+        create: {
+          hash: johnPassword,
+        },
+      },
+      tweets: {
+        createMany: {
+          data: [{ content: "Hey!" }],
+        },
+      },
+    },
+  });
 
   const hashedPassword = await bcrypt.hash("secretpassword", 10);
 
@@ -55,29 +105,8 @@ async function seed() {
           ],
         },
       },
-    },
-  });
-
-  const thomasPassword = await bcrypt.hash("thomaspassword", 10);
-
-  await prisma.user.create({
-    data: {
-      email: thomasLeTrain.email,
-      username: thomasLeTrain.username,
-      firstname: thomasLeTrain.firstname,
-      lastname: thomasLeTrain.lastname,
-      password: {
-        create: {
-          hash: thomasPassword,
-        },
-      },
-      tweets: {
-        createMany: {
-          data: [
-            { content: "Salut moi c'est Thomas" },
-            { content: "J'aime rire 🙂" },
-          ],
-        },
+      following: {
+        connect: { email: johnDoe.email },
       },
     },
   });

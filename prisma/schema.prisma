@@ -21,7 +21,9 @@ model User {
   biography      String    @default("")
   isFollowOnly   Boolean   @default(false)
   magicLinkToken String?
-  tweets          Tweet[]
+  tweets         Tweet[]
+  followedBy     User[]    @relation("UserFollows")
+  following      User[]    @relation("UserFollows")
 }
 
 model Password {

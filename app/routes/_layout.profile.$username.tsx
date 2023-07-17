@@ -3,13 +3,18 @@ import {
   Link,
   NavLink,
   Outlet,
+  useFetcher,
   useLoaderData,
   useLocation,
 } from "@remix-run/react";
 import { Bird, Heart } from "lucide-react";
+import { useState } from "react";
 import invariant from "tiny-invariant";
 
-import { getUserByUsername } from "~/business/user/services/index.server";
+import {
+  getUserByUsername,
+  isUserFollowed,
+} from "~/business/user/services/index.server";
 import { getUserId } from "~/business/user/services/session.server";
 import { Tabs, TabsList, TabsTrigger } from "~/ui/components/ui/tabs";
 
@@ -19,15 +24,31 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   const loggedUserId = await getUserId(request);
   const user = await getUserByUsername(params.username);
   invariant(user, "user not found");
+  const followed = loggedUserId
+    ? await isUserFollowed(user.id, loggedUserId)
+    : false;
 
   const isCurrentUserProfile = loggedUserId === user.id;
-  return json({ user, isCurrentUserProfile });
+  return json({ user, isCurrentUserProfile, followed });
 };
 
 export default function Profile() {
-  const { user, isCurrentUserProfile } = useLoaderData<typeof loader>();
+  const { user, isCurrentUserProfile, followed } =
+    useLoaderData<typeof loader>();
   const { pathname } = useLocation();
   const activeTab = pathname.substring(pathname.lastIndexOf("/") + 1);
+  const fetcher = useFetcher();
+  const pendingFollowToggle = fetcher.state !== "idle";
+  const [isFollowButtonHovered, setIsFollowButtonHovered] = useState(false);
+
+  const optimisticFollowed = pendingFollowToggle
+    ? fetcher.formData?.get("shouldFollow") === "true"
+    : followed;
+  const followButtonClassName = optimisticFollowed
+    ? isFollowButtonHovered
+      ? "w-full rounded bg-red-500 px-4 py-2 text-center text-white hover:bg-red-600 focus:bg-red-400"
+      : "w-full rounded bg-green-500 px-4 py-2 text-center text-white hover:bg-green-600 focus:bg-green-400"
+    : "w-full rounded bg-blue-500 px-4 py-2 text-center text-white hover:bg-blue-600 focus:bg-blue-400";
 
   return (
     <div>
@@ -42,14 +63,33 @@ export default function Profile() {
           {isCurrentUserProfile ? (
             <NavLink
               to="edit"
-              className="w-full rounded bg-blue-500 px-4 py-2 text-center text-white hover:bg-blue-600 focus:bg-blue-400"
+              className="w-full rounded border-2 border-blue-500 px-4 py-2 text-center text-blue-500 hover:border-blue-600 hover:bg-blue-600 hover:text-white focus:border-blue-400 focus:bg-blue-400 focus:text-white"
             >
               Edit
             </NavLink>
           ) : (
-            <button className="w-full  rounded bg-blue-500 px-4 py-2 text-center text-white hover:bg-blue-600 focus:bg-blue-400">
-              Follow / Unfollow
-            </button>
+            <fetcher.Form action="/follow" method="post" className="w-full">
+              <input
+                type="hidden"
+                value={optimisticFollowed ? "false" : "true"}
+                name="shouldFollow"
+              />
+
+              <button
+                type="submit"
+                name="followedId"
+                value={user.id}
+                className={followButtonClassName}
+                onMouseEnter={() => setIsFollowButtonHovered(true)}
+                onMouseLeave={() => setIsFollowButtonHovered(false)}
+              >
+                {optimisticFollowed
+                  ? isFollowButtonHovered
+                    ? "Unfollow"
+                    : "Followed"
+                  : "Follow"}
+              </button>
+            </fetcher.Form>
           )}
         </div>
         <div>
