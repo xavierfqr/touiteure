@@ -18,6 +18,9 @@ import {
 import { getUserId } from "~/business/user/services/session.server";
 import { Tabs, TabsList, TabsTrigger } from "~/ui/components/ui/tabs";
 
+export const DEFAULT_PFP =
+  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
 export const loader = async ({ params, request }: LoaderArgs) => {
   invariant(params.username, "username not found in params");
 
@@ -56,7 +59,7 @@ export default function Profile() {
         <div className="flex flex-col items-center justify-center gap-5">
           <img
             className="rounded-full"
-            src={"https://cdn-icons-png.flaticon.com/512/3135/3135715.png"}
+            src={user.profilePicture ? user.profilePicture : DEFAULT_PFP}
             alt="profile"
             width={200}
           />

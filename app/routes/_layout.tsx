@@ -13,6 +13,7 @@ const NOT_CONNECTED_TABS = [
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await getUserId(request);
+
   if (userId) {
     const user = await getUserById(userId);
     return json({ userId: user?.id, user });
