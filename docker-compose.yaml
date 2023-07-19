@@ -14,5 +14,24 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
+  gcs:
+    image: fsouza/fake-gcs-server
+    ports:
+      - "5050:5050"
+    command:
+      [
+        "-scheme",
+        "http",
+        "-port",
+        "5050",
+        "-external-url",
+        "http://localhost:5050",
+        "-backend",
+        "memory",
+      ]
+    volumes:
+      - storage_data:/storage
+
 volumes:
   db_data:
+  storage_data:

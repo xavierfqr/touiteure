@@ -1,4 +1,5 @@
 import type { Password, User } from "@prisma/client";
+import { gcsUploadImageHandler } from "../../../technical/gcs.utils";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
@@ -115,3 +116,24 @@ export async function isUserFollowed(followedId: string, userId: string) {
 
   return result?._count.followedBy === 1;
 }
+export const gcsUploadUserPFPHandler = async ({
+  name,
+  data,
+  contentType,
+  filename,
+}: {
+  name: string;
+  data: AsyncIterable<Uint8Array>;
+  contentType: string;
+  filename?: string;
+}) => {
+  if (name !== "profilePicture") {
+    return;
+  }
+
+  if (!filename) {
+    return "default";
+  }
+
+  return gcsUploadImageHandler({ name, data, contentType, filename });
+};

@@ -24,6 +24,7 @@ model User {
   tweets         Tweet[]
   followedBy     User[]    @relation("UserFollows")
   following      User[]    @relation("UserFollows")
+  likes          Tweet[]   @relation("PostLikes")
 }
 
 model Password {
@@ -39,4 +40,5 @@ model Tweet {
   authorId   String
   author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   attachment String?
+  likes      User[]   @relation("PostLikes")
 }

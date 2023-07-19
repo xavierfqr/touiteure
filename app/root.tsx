@@ -11,7 +11,6 @@ import {
 
 import { getUser } from "~/business/user/services/session.server";
 import stylesheet from "~/tailwind.css";
-
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
