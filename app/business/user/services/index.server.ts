@@ -1,10 +1,10 @@
 import type { Password, User } from "@prisma/client";
 import { gcsUploadImageHandler } from "../../../technical/gcs.utils";
 import bcrypt from "bcryptjs";
+import { nanoid } from "nanoid";
 
+import config from "~/config";
 import { prisma } from "~/db.server";
-
-export type { User } from "@prisma/client";
 
 export async function getUserById(id: User["id"]) {
   return prisma.user.findUnique({ where: { id } });
@@ -18,13 +18,15 @@ export async function getUserByEmail(email: User["email"]) {
   return prisma.user.findUnique({ where: { email } });
 }
 
-export async function createUser(
-  email: User["email"],
-  username: User["username"],
-  password: string,
-  firstname: User["firstname"],
-  lastname: User["lastname"]
-) {
+export async function createUser({
+  email,
+  username,
+  firstname,
+  lastname,
+  password,
+}: Pick<User, "email" | "username" | "firstname" | "lastname"> & {
+  password: string;
+}) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   return prisma.user.create({
@@ -33,6 +35,7 @@ export async function createUser(
       username,
       firstname,
       lastname,
+      magicLinkToken: nanoid(config.auth.magicLinkTokenLength),
       password: {
         create: {
           hash: hashedPassword,

@@ -9,6 +9,7 @@ module.exports = {
     v2_routeConvention: true,
   },
   ignoredRouteFiles: ["**/.*", "**/*.test.{js,jsx,ts,tsx}"],
+  serverDependenciesToBundle: ["nanoid"],
   postcss: true,
   serverModuleFormat: "cjs",
   tailwind: true,

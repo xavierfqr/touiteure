@@ -2,7 +2,9 @@ import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import { useEffect, useRef } from "react";
+import invariant from "tiny-invariant";
 
+import { getMagicLinkFromToken } from "~/business/auth/services/index.server";
 import {
   createUser,
   getUserByEmail,
@@ -12,6 +14,8 @@ import {
   createUserSession,
   getUserId,
 } from "~/business/user/services/session.server";
+import { send as sendEmail } from "~/technical/email";
+import { Template } from "~/technical/email/types";
 import { safeRedirect, validateEmail, validateStringInput } from "~/utils";
 
 const defaultErrors = {
@@ -37,6 +41,7 @@ export const action = async ({ request }: ActionArgs) => {
   const lastname = formData.get("lastname");
   const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
 
+  // TODO Use Zod for validation
   if (!validateEmail(email)) {
     return json(
       { errors: { ...defaultErrors, email: "Email is invalid" } },
@@ -100,6 +105,7 @@ export const action = async ({ request }: ActionArgs) => {
 
   const existingUsername = await getUserByUsername(username);
   if (existingUsername) {
+    // TODO Prevent giving info about our user base
     return json(
       {
         errors: {
@@ -125,7 +131,27 @@ export const action = async ({ request }: ActionArgs) => {
     );
   }
 
-  const user = await createUser(email, username, password, firstname, lastname);
+  const user = await createUser({
+    email,
+    username,
+    password,
+    firstname,
+    lastname,
+  });
+
+  invariant(
+    user.magicLinkToken,
+    "User magic link token must be defined after its immediate creation"
+  );
+
+  // @etienne Check error and handle
+  await sendEmail({
+    to: [{ email }],
+    template: Template.confirmEmailAddress,
+    params: {
+      MAGIC_LINK: getMagicLinkFromToken(user.magicLinkToken),
+    },
+  });
 
   return createUserSession({
     redirectTo,

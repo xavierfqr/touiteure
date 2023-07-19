@@ -40,6 +40,7 @@
     "date-fns": "^2.30.0",
     "isbot": "^3.6.12",
     "lucide-react": "^0.259.0",
+    "nanoid": "^4.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-lottie": "^1.2.3",
