@@ -224,7 +224,7 @@ export default function Join() {
               htmlFor="firstname"
               className="block text-sm font-medium text-gray-700"
             >
-              firstname
+              Firstname
             </label>
             <div className="mt-1">
               <input
@@ -250,7 +250,7 @@ export default function Join() {
               htmlFor="lastname"
               className="block text-sm font-medium text-gray-700"
             >
-              lastname
+              Lastname
             </label>
             <div className="mt-1">
               <input
