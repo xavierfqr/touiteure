@@ -1,3 +1,4 @@
+import type { Tweet } from "@prisma/client";
 import { prisma } from "~/db.server";
 
 export async function listTweets({
@@ -41,4 +42,14 @@ export async function listTweets({
       liked: false,
     };
   });
+}
+
+
+export async function postTweet(authorId: Tweet["authorId"], content: Tweet["content"]) {
+  await prisma.tweet.create({
+    data: {
+      content,
+      authorId,
+    }
+  })
 }
