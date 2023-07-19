@@ -1,5 +1,6 @@
 import type { Tweet } from "@prisma/client";
 import { prisma } from "~/db.server";
+import { gcsUploadImageHandler } from "../../../technical/gcs.utils";
 
 export async function listTweets({
   authorId,
@@ -45,11 +46,35 @@ export async function listTweets({
 }
 
 
-export async function postTweet(authorId: Tweet["authorId"], content: Tweet["content"]) {
+export async function postTweet(authorId: Tweet["authorId"], tweet: Partial<Tweet>) {
   await prisma.tweet.create({
     data: {
-      content,
-      authorId,
+      content: tweet.content!,
+      attachment: tweet.attachment,
+      authorId
     }
   })
 }
+
+export const gcsUploadTweetImageHandler = async ({
+  name,
+  data,
+  contentType,
+  filename,
+}: {
+  name: string;
+  data: AsyncIterable<Uint8Array>;
+  contentType: string;
+  filename?: string;
+}) => {
+  if (name !== "attachment") {
+    return;
+  }
+
+  if (!filename) {
+    return "";
+  }
+
+
+  return gcsUploadImageHandler({ name, data, contentType, filename });
+};
