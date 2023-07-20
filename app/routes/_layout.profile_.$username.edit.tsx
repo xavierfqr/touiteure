@@ -79,6 +79,7 @@ export const action = async ({ request }: ActionArgs) => {
 
   try {
     const validatedForm = schema.parse(Object.fromEntries(formData));
+
     const updatedUser = {
       ...validatedForm,
       profilePicture:
