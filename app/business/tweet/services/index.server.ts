@@ -46,10 +46,10 @@ export async function listTweets({
 }
 
 
-export async function postTweet(authorId: Tweet["authorId"], tweet: Partial<Tweet>) {
+export async function postTweet(authorId: Tweet["authorId"], tweet: Pick<Tweet, 'content' | 'attachment'>) {
   await prisma.tweet.create({
     data: {
-      content: tweet.content!,
+      content: tweet.content,
       attachment: tweet.attachment,
       authorId
     }

@@ -131,7 +131,6 @@ export default function Layout() {
           </button>
           <button
             type="submit"
-            name="_action"
             disabled={contentState === ""}
             className="mt-5 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
           >
