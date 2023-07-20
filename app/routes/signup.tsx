@@ -2,21 +2,15 @@ import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import { useEffect, useRef } from "react";
-import invariant from "tiny-invariant";
 
-import { getMagicLinkFromToken } from "~/business/auth/services/index.server";
+import { askEmailConfirmation } from "~/business/auth/services/index.server";
 import {
   createUser,
   getUserByEmail,
   getUserByUsername,
 } from "~/business/user/services/index.server";
-import {
-  createUserSession,
-  getUserId,
-} from "~/business/user/services/session.server";
-import { send as sendEmail } from "~/technical/email";
-import { Template } from "~/technical/email/types";
-import { safeRedirect, validateEmail, validateStringInput } from "~/utils";
+import { getUserId } from "~/business/user/services/session.server";
+import { validateEmail, validateStringInput } from "~/utils";
 
 const defaultErrors = {
   email: null,
@@ -39,7 +33,6 @@ export const action = async ({ request }: ActionArgs) => {
   const password = formData.get("password");
   const firstname = formData.get("firstname");
   const lastname = formData.get("lastname");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
 
   // TODO Use Zod for validation
   if (!validateEmail(email)) {
@@ -139,26 +132,9 @@ export const action = async ({ request }: ActionArgs) => {
     lastname,
   });
 
-  invariant(
-    user.magicLinkToken,
-    "User magic link token must be defined after its immediate creation"
-  );
+  await askEmailConfirmation(user);
 
-  // @etienne Check error and handle
-  await sendEmail({
-    to: [{ email }],
-    template: Template.confirmEmailAddress,
-    params: {
-      MAGIC_LINK: getMagicLinkFromToken(user.magicLinkToken),
-    },
-  });
-
-  return createUserSession({
-    redirectTo,
-    remember: false,
-    request,
-    userId: user.id,
-  });
+  return redirect(`/confirm-email?email=${encodeURIComponent(email)}`);
 };
 
 export const meta: V2_MetaFunction = () => [{ title: "Sign Up" }];

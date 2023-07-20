@@ -1,8 +1,10 @@
 import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import { CheckCircle } from "lucide-react";
 import { useEffect, useRef } from "react";
 
+import { askEmailConfirmation } from "~/business/auth/services/index.server";
 import { verifyLogin } from "~/business/user/services/index.server";
 import {
   createUserSession,
@@ -53,6 +55,12 @@ export const action = async ({ request }: ActionArgs) => {
     );
   }
 
+  if (!user.isVerified) {
+    await askEmailConfirmation(user);
+
+    return redirect(`/confirm-email?email=${encodeURIComponent(email)}`);
+  }
+
   return createUserSession({
     redirectTo,
     remember: remember === "on" ? true : false,
@@ -63,9 +71,25 @@ export const action = async ({ request }: ActionArgs) => {
 
 export const meta: V2_MetaFunction = () => [{ title: "Login" }];
 
+function translateMessageKey(msg: string | null) {
+  switch (msg) {
+    case "verified":
+      return (
+        <h3 className="mb-12 flex items-center justify-center gap-2 text-center text-2xl font-bold">
+          <CheckCircle strokeWidth={3} className="text-emerald-500" />
+          Adresse email confirmée !
+        </h3>
+      );
+    default:
+      return null;
+  }
+}
+
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/";
+  const message = searchParams.get("msg");
+  const translatedMessage = translateMessageKey(message);
   const actionData = useActionData<typeof action>();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -80,6 +104,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-full flex-col justify-center">
+      {translatedMessage}
       <div className="mx-auto w-full max-w-md px-8">
         <Form method="post" className="space-y-6">
           <div>
