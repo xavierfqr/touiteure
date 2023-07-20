@@ -22,6 +22,11 @@ export async function listTweets({
           _count: { select: { followedBy: { where: { id: userId } } } },
         },
       },
+      likes: {
+        where: {
+          id: userId
+        }
+      }
     },
     where: {
       author: {
@@ -40,7 +45,7 @@ export async function listTweets({
         followed: !!_count.followedBy,
         canFollow: userId ? userId !== t.author.id : false,
       },
-      liked: false,
+      liked: t.likes.length === 1,
     };
   });
 }
@@ -54,6 +59,21 @@ export async function postTweet(authorId: Tweet["authorId"], tweet: Pick<Tweet, 
       authorId
     }
   })
+}
+
+
+export async function like(tweetId: string, userId: string) {
+  return await prisma.user.update({
+    where: { id: userId },
+    data: { likes: { connect: { id: tweetId } } },
+  });
+}
+
+export async function unlike(tweetId: string, userId: string) {
+  return await prisma.user.update({
+    where: { id: userId },
+    data: { likes: { disconnect: { id: tweetId } } },
+  });
 }
 
 export const gcsUploadTweetImageHandler = async ({

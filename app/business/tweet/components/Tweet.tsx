@@ -1,21 +1,34 @@
 import { Link, useFetcher } from "@remix-run/react";
-import { Heart, UserCheck2, UserPlus2, UserX2 } from "lucide-react";
+import {  Heart, UserCheck2, UserPlus2, UserX2 } from "lucide-react";
 
 import type { Tweet } from "~/business/tweet/type";
 import { formatISODate } from "~/technical/formatDate";
 import { AbsoluteRoutes } from "~/routes";
 import { useState } from "react";
+import Lottie from 'react-lottie';
+import likeAnimation from '../../../../lotties/like.json';
 
 type TweetProps = Tweet;
 
 export default function Tweet({
   author: { id, username, followed, canFollow },
+  id: tweetId,
   content,
   attachment,
   liked,
   createdAt,
 }: TweetProps) {
+  const defaultOptions = {
+    loop: false,
+    autoplay: false,
+    animationData: likeAnimation,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice"
+    }
+  };
+
   const fetcher = useFetcher();
+  const likeFetcher = useFetcher();
   const pendingFollowToggle = fetcher.state !== "idle";
   const optimisticFollowed = pendingFollowToggle
     ? fetcher.formData?.get("shouldFollow") === "true"
@@ -77,13 +90,35 @@ export default function Tweet({
       {attachment ? <img src={attachment} alt="Attachment" /> : null}
       <div className="flex place-content-between items-center">
         <p className="text-sm text-slate-400">{formatISODate(createdAt)}</p>
-        <button>
-          <Heart
-            className={`${liked ? "fill-sky-500" : ""} text-sky-500`}
-            size={20}
-            strokeWidth={2.5}
-          />
-        </button>
+        <likeFetcher.Form action="/like" method="post">
+          <input
+              type="hidden"
+              value={liked ? "false" : "true"}
+              name="shouldLike"
+            />
+            <input
+              type="hidden"
+              value={tweetId}
+              name="tweetId"
+            />
+          <button type="submit">
+            <Lottie 
+              options={defaultOptions}
+              height={50}
+              width={50}
+              isClickToPauseDisabled
+              isStopped={!liked}
+              style={{ display: liked ? "block" : "none" }}
+            />
+          
+            <Heart
+                className={`${liked ? "hidden" : "block"} text-sky-500 m-[15px]`}
+                size={20}
+                strokeWidth={2.5}
+              />
+
+          </button>
+        </likeFetcher.Form>
       </div>
     </div>
   );
