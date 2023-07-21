@@ -18,13 +18,19 @@ export async function getUserByEmail(email: User["email"]) {
   return prisma.user.findUnique({ where: { email } });
 }
 
-export async function createUser(
-  email: User["email"],
-  username: User["username"],
-  password: string,
-  firstname: User["firstname"],
-  lastname: User["lastname"]
-) {
+export async function getUserByMagicLinkToken(magicLinkToken: string) {
+  return prisma.user.findFirst({ where: { magicLinkToken } });
+}
+
+export async function createUser({
+  email,
+  username,
+  firstname,
+  lastname,
+  password,
+}: Pick<User, "email" | "username" | "firstname" | "lastname"> & {
+  password: string;
+}) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   return prisma.user.create({

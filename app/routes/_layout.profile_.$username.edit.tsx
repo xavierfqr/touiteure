@@ -1,6 +1,7 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import {
   json,
+  redirect,
   unstable_composeUploadHandlers,
   unstable_createMemoryUploadHandler,
   unstable_parseMultipartFormData,
@@ -60,6 +61,10 @@ export const loader = async ({ params }: LoaderArgs) => {
 
   const user = await getUserByUsername(params.username);
   invariant(user, "user not found");
+
+  if (!user.isVerified) {
+    return redirect("/login");
+  }
 
   return json({ user });
 };

@@ -3,16 +3,14 @@ import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
+import { askEmailConfirmation } from "~/business/auth/services/index.server";
 import {
   createUser,
   getUserByEmail,
   getUserByUsername,
 } from "~/business/user/services/index.server";
-import {
-  createUserSession,
-  getUserId,
-} from "~/business/user/services/session.server";
-import { safeRedirect, validateEmail, validateStringInput } from "~/utils";
+import { getUserId } from "~/business/user/services/session.server";
+import { validateEmail, validateStringInput } from "~/utils";
 
 const defaultErrors = {
   email: null,
@@ -35,8 +33,8 @@ export const action = async ({ request }: ActionArgs) => {
   const password = formData.get("password");
   const firstname = formData.get("firstname");
   const lastname = formData.get("lastname");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
 
+  // TODO Use Zod for validation
   if (!validateEmail(email)) {
     return json(
       { errors: { ...defaultErrors, email: "Email is invalid" } },
@@ -100,6 +98,7 @@ export const action = async ({ request }: ActionArgs) => {
 
   const existingUsername = await getUserByUsername(username);
   if (existingUsername) {
+    // TODO Prevent giving info about our user base
     return json(
       {
         errors: {
@@ -125,14 +124,17 @@ export const action = async ({ request }: ActionArgs) => {
     );
   }
 
-  const user = await createUser(email, username, password, firstname, lastname);
-
-  return createUserSession({
-    redirectTo,
-    remember: false,
-    request,
-    userId: user.id,
+  const user = await createUser({
+    email,
+    username,
+    password,
+    firstname,
+    lastname,
   });
+
+  await askEmailConfirmation(user);
+
+  return redirect(`/confirm-email?email=${encodeURIComponent(email)}`);
 };
 
 export const meta: V2_MetaFunction = () => [{ title: "Sign Up" }];
@@ -224,7 +226,7 @@ export default function Join() {
               htmlFor="firstname"
               className="block text-sm font-medium text-gray-700"
             >
-              firstname
+              Firstname
             </label>
             <div className="mt-1">
               <input
@@ -250,7 +252,7 @@ export default function Join() {
               htmlFor="lastname"
               className="block text-sm font-medium text-gray-700"
             >
-              lastname
+              Lastname
             </label>
             <div className="mt-1">
               <input

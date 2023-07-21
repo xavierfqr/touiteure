@@ -41,6 +41,7 @@ async function seed() {
       username: thomasLeTrain.username,
       firstname: thomasLeTrain.firstname,
       lastname: thomasLeTrain.lastname,
+      isVerified: true,
       password: {
         create: {
           hash: thomasPassword,
@@ -65,6 +66,7 @@ async function seed() {
       username: johnDoe.username,
       firstname: johnDoe.firstname,
       lastname: johnDoe.lastname,
+      isVerified: true,
       password: {
         create: {
           hash: johnPassword,
@@ -86,6 +88,7 @@ async function seed() {
       username: originalTouitos.username,
       firstname: originalTouitos.firstname,
       lastname: originalTouitos.lastname,
+      isVerified: true,
       password: {
         create: {
           hash: hashedPassword,
