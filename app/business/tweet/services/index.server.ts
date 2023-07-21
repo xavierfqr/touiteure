@@ -5,9 +5,11 @@ import { gcsUploadImageHandler } from "../../../technical/gcs.utils";
 export async function listTweets({
   authorId,
   userId,
+  isLiked,
 }: {
   userId?: string;
   authorId?: string;
+  isLiked?: boolean
 }) {
   const tweets = await prisma.tweet.findMany({
     select: {
@@ -28,7 +30,15 @@ export async function listTweets({
         }
       }
     },
-    where: {
+    where: isLiked ? 
+      {
+        likes: {
+          some: {
+            id: userId
+          }
+        }
+      } : 
+      {
       author: {
         id: authorId,
       },

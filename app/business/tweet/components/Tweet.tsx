@@ -36,7 +36,7 @@ export default function Tweet({
   const [isFollowButtonHovered, setIsFollowButtonHovered] = useState(false);
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-slate-300 p-4">
+    <div className="flex flex-col gap-3 rounded-lg border border-slate-300 p-4" data-testid="touite">
       <div className="flex items-center gap-2">
         <Link
           className="font-bold"
@@ -101,7 +101,7 @@ export default function Tweet({
               value={tweetId}
               name="tweetId"
             />
-          <button type="submit">
+          <button type="submit" data-testid="like-btn">
             <Lottie 
               options={defaultOptions}
               height={50}
