@@ -30,7 +30,7 @@ const schema = z.object({
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await getUserId(request);
-  return json({ tweets: await listTweets({ userId }) });
+  return json({ tweets: await listTweets({ userId }), userId });
 };
 
 export const action = async ({ request }: ActionArgs) => {
@@ -67,7 +67,7 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function Layout() {
-  const { tweets } = useLoaderData<typeof loader>();
+  const { tweets, userId } = useLoaderData<typeof loader>();
 
   const navigation = useNavigation();
   let isAdding = navigation.state === "submitting";
@@ -140,7 +140,7 @@ export default function Layout() {
       </Form>
       <hr className="mx-20 mb-20" />
 
-      <TweetList tweets={tweets} />
+      <TweetList tweets={tweets} userId={userId} />
     </div>
   );
 }
