@@ -16,6 +16,18 @@ declare global {
       login: typeof login;
 
       /**
+       * create and logs a user
+       *
+       * @returns {typeof createAndLoginVerifiedUser}
+       * @memberof Chainable
+       * @example
+       *    cy.createAndLoginVerifiedUser()
+       * @example
+       *    cy.createAndLoginVerifiedUser({ email: 'whatever@example.com' })
+       */
+      createAndLoginVerifiedUser: typeof createAndLoginVerifiedUser;
+
+      /**
        * Deletes the current @user
        *
        * @returns {typeof cleanupUser}
@@ -59,6 +71,28 @@ function login({
   return cy.get("@user");
 }
 
+function createAndLoginVerifiedUser({
+  email,
+  username,
+  password,
+  firstname,
+  lastname,
+}: {
+  email: string;
+  username: string;
+  password: string;
+  firstname: string;
+  lastname: string;
+}) {
+  return executeCreateAndLoginVerifiedUser({
+    email,
+    username,
+    password,
+    firstname,
+    lastname,
+  });
+}
+
 function cleanupUser({ email }: { email?: string } = {}) {
   if (email) {
     deleteUserByEmail(email);
@@ -80,6 +114,31 @@ function deleteUserByEmail(email: string) {
   cy.clearCookie("__session");
 }
 
+function executeCreateAndLoginVerifiedUser({
+  email,
+  username,
+  password,
+  firstname,
+  lastname,
+}: {
+  email: string;
+  username: string;
+  password: string;
+  firstname: string;
+  lastname: string;
+}) {
+  cy.then(() => ({ email })).as("user");
+  cy.exec(
+    `npx ts-node --require tsconfig-paths/register ./cypress/support/create-verified-user.ts "${email}" "${username}" "${password}" "${firstname}" "${lastname}"`
+  ).then(({ stdout }) => {
+    const cookieValue = stdout
+      .replace(/.*<cookie>(?<cookieValue>.*)<\/cookie>.*/s, "$<cookieValue>")
+      .trim();
+    cy.setCookie("__session", cookieValue);
+  });
+  return cy.get("@user");
+}
+
 // We're waiting a second because of this issue happen randomly
 // https://github.com/cypress-io/cypress/issues/7306
 // Also added custom types to avoid getting detached
@@ -93,3 +152,4 @@ function visitAndCheck(url: string, waitTime: number = 1000) {
 Cypress.Commands.add("login", login);
 Cypress.Commands.add("cleanupUser", cleanupUser);
 Cypress.Commands.add("visitAndCheck", visitAndCheck);
+Cypress.Commands.add("createAndLoginVerifiedUser", createAndLoginVerifiedUser);
