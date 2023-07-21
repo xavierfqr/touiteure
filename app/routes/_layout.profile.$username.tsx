@@ -1,4 +1,4 @@
-import { json, type LoaderArgs } from "@remix-run/node";
+import { json, redirect, type LoaderArgs } from "@remix-run/node";
 import {
   Link,
   NavLink,
@@ -27,6 +27,11 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   const loggedUserId = await getUserId(request);
   const user = await getUserByUsername(params.username);
   invariant(user, "user not found");
+
+  if (!user.isVerified) {
+    return redirect("/login");
+  }
+
   const followed = loggedUserId
     ? await isUserFollowed(user.id, loggedUserId)
     : false;
