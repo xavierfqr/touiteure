@@ -3,7 +3,7 @@ install:
 	yarn
 
 start: db.start gcs.start
-	yarn wait-port 5432 && yarn dev
+	yarn wait-port 5432 && yarn wait-port 5050 && yarn dev
 
 stop:
 	docker compose stop
