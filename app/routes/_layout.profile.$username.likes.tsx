@@ -16,15 +16,15 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   const userId = await getUserId(request);
   const tweets = await listTweets({ authorId: author.id, userId, isLiked: true });
 
-  return json({ tweets });
+  return json({ tweets, userId });
 };
 
 export default function Likes() {
-  const { tweets } = useLoaderData<typeof loader>();
+  const { tweets, userId } = useLoaderData<typeof loader>();
 
   return (
     <TabsContent value="likes" className="flex justify-center">
-      <TweetList tweets={tweets} />
+      <TweetList tweets={tweets} userId={userId}/>
     </TabsContent>
   );
 }

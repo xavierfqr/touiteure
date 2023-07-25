@@ -86,6 +86,14 @@ export async function unlike(tweetId: string, userId: string) {
   });
 }
 
+
+export async function deleteTweet(tweetId: string) {
+  return await prisma.tweet.delete({
+    where: { id: tweetId },
+  })
+}
+
+
 export const gcsUploadTweetImageHandler = async ({
   name,
   data,
