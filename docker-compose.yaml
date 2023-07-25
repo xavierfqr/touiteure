@@ -15,7 +15,7 @@ services:
       - db_data:/var/lib/postgresql/data
 
   gcs:
-    image: fsouza/fake-gcs-server
+    image: fsouza/fake-gcs-server:1.45.2
     ports:
       - "5050:5050"
     command:

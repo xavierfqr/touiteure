@@ -2,7 +2,10 @@ import { Storage } from "@google-cloud/storage";
 
 const GCS_API_ENDPOINT = "http://localhost:5050";
 
-const storage = new Storage({ apiEndpoint: GCS_API_ENDPOINT });
+const storage = new Storage({
+  projectId: process.env.GOOGLE_STORAGE_PROJECT_ID,
+  apiEndpoint: GCS_API_ENDPOINT
+});
 
 async function createOrFindBucket() {
   const [buckets] = await storage.getBuckets();
